@@ -2,17 +2,23 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Поиск по NFC</title>
     <style>
-        body { font-family: Arial; padding: 20px; max-width: 500px; margin: 0 auto; }
-        .hidden { display: none; }
-        .admin-panel { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px; }
-        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #result { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .error { color: red; }
-        .success { color: green; }
+        body { font-family: Arial; padding: 20px; max-width: 500px; margin: 0 auto; background: #f5f5f5; }
+        .hidden { display: none !important; }
+        .admin-panel { background: #e8f0fe; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #4285f4; }
+        input, button { padding: 12px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 5px; }
+        input { border: 1px solid #ccc; }
+        button { background: #4285f4; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1a73e8; }
+        #result { background: white; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        .logout-btn { background: #d32f2f; margin-top: 10px; }
+        .logout-btn:hover { background: #b71c1c; }
+        #loginBlock { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 50px; }
+        h2 { color: #333; }
     </style>
 </head>
 <body>
@@ -20,21 +26,21 @@
     <!-- ===== БЛОК ВХОДА ===== -->
     <div id="loginBlock">
         <h2>🔐 Вход для администраторов</h2>
-        <input type="email" id="loginEmail" placeholder="Email" value="admin1@mail.ru">
+        <input type="email" id="loginEmail" placeholder="Email">
         <input type="password" id="loginPassword" placeholder="Пароль">
         <button onclick="login()">Войти</button>
         <div id="loginError" class="error"></div>
     </div>
 
-    <!-- ===== ОСНОВНОЙ БЛОК (после входа) ===== -->
+    <!-- ===== ОСНОВНОЙ БЛОК ===== -->
     <div id="mainBlock" class="hidden">
-        <h2>🏁 Поиск по NFC-метке</h2>
-        <p>Приложите метку или введите ключ вручную:</p>
+        <h2>🏁 Поиск по NFC</h2>
+        <p>Приложите метку или введите госномер/VIN:</p>
         
         <input type="text" id="nfcInput" placeholder="Госномер или VIN...">
         <button onclick="searchByNFC()">🔍 Поиск</button>
         
-        <button onclick="logout()" style="background:#dc3545; margin-top:10px;">🚪 Выйти</button>
+        <button onclick="logout()" class="logout-btn">🚪 Выйти</button>
         
         <div id="result">
             <p><strong>Госномер:</strong> <span id="display-gos-num"></span></p>
@@ -48,12 +54,12 @@
         
         <div id="notFound" class="error hidden">❌ Данные не найдены</div>
         
-        <!-- ===== АДМИН-ПАНЕЛЬ (видна только админам) ===== -->
+        <!-- ===== АДМИН-ПАНЕЛЬ ===== -->
         <div id="adminPanel" class="admin-panel hidden">
             <h3>⚙️ Панель администратора</h3>
-            <p>Вы вошли как: <span id="adminName"></span></p>
+            <p>👤 Вы вошли как: <span id="adminName"></span></p>
             
-            <h4>Добавить запись</h4>
+            <h4>➕ Добавить запись</h4>
             <input type="text" id="newGosNum" placeholder="Госномер (А123ВС77)">
             <input type="text" id="newCar" placeholder="Марка (Toyota)">
             <input type="text" id="newModel" placeholder="Модель (Camry)">
@@ -72,7 +78,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // 🔧 КОНФИГУРАЦИЯ FIREBASE
+        // 🔧 КОНФИГУРАЦИЯ FIREBASE (ЗАМЕНИТЕ НА СВОИ)
         const firebaseConfig = {
             apiKey: "ВАШ_API_KEY",
             authDomain: "ВАШ_ПРОЕКТ.firebaseapp.com",
@@ -87,63 +93,54 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        let currentUser = null;
-        let currentUserData = null;
+        // ============================================================
+        // 🔥 СПИСОК РАЗРЕШЁННЫХ АДМИНИСТРАТОРОВ (ТОЛЬКО ЭТИ 3)
+        // ============================================================
+        const ALLOWED_ADMINS = [
+            'az99arseniy@gmaio.com',
+            'arseniydrummer@gmail.com',
+            'forcenet91101@gmail.com'
+        ];
 
-        // ============================================
+        let currentUser = null;
+        let currentAdminEmail = '';
+
+        // ============================================================
         // 1. ФУНКЦИЯ ВХОДА
-        // ============================================
+        // ============================================================
         async function login() {
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
             
             errorEl.textContent = '';
 
+            // Проверяем, есть ли email в списке разрешённых
+            if (!ALLOWED_ADMINS.includes(email)) {
+                errorEl.textContent = '❌ Этот email не имеет прав администратора';
+                return;
+            }
+
             try {
-                // Авторизация через Firebase Auth
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 currentUser = userCredential.user;
-                
-                // Проверяем, есть ли пользователь в списке админов
-                const adminsRef = db.ref('admins');
-                const snapshot = await adminsRef.once('value');
-                const admins = snapshot.val();
-                
-                let isAdmin = false;
-                let adminName = '';
-                
-                // Перебираем всех админов
-                for (let key in admins) {
-                    if (admins[key].email === currentUser.email) {
-                        isAdmin = true;
-                        adminName = admins[key].name || currentUser.email;
-                        currentUserData = admins[key];
-                        break;
-                    }
-                }
-                
-                if (isAdmin) {
-                    // ✅ Вход разрешён
-                    document.getElementById('loginBlock').classList.add('hidden');
-                    document.getElementById('mainBlock').classList.remove('hidden');
-                    document.getElementById('adminPanel').classList.remove('hidden');
-                    document.getElementById('adminName').textContent = adminName;
-                    document.getElementById('loginError').textContent = '';
-                } else {
-                    // ❌ Не в списке админов
-                    await auth.signOut();
-                    errorEl.textContent = '❌ У вас нет прав администратора';
-                }
-                
+                currentAdminEmail = email;
+
+                // ✅ Вход разрешён
+                document.getElementById('loginBlock').classList.add('hidden');
+                document.getElementById('mainBlock').classList.remove('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminName').textContent = email;
+                errorEl.textContent = '';
+
             } catch (error) {
                 errorEl.textContent = '❌ Ошибка: ' + error.message;
             }
         }
 
-        // ============================================
+        // ============================================================
         // 2. ВЫХОД
-        // ============================================
+        // ============================================================
         function logout() {
             auth.signOut();
             document.getElementById('loginBlock').classList.remove('hidden');
@@ -151,12 +148,12 @@
             document.getElementById('result').style.display = 'none';
             document.getElementById('adminPanel').classList.add('hidden');
             currentUser = null;
-            currentUserData = null;
+            currentAdminEmail = '';
         }
 
-        // ============================================
+        // ============================================================
         // 3. ПОИСК ПО КЛЮЧУ
-        // ============================================
+        // ============================================================
         async function searchByNFC() {
             const key = document.getElementById('nfcInput').value.trim();
             
@@ -189,9 +186,9 @@
             }
         }
 
-        // ============================================
-        // 4. ДОБАВЛЕНИЕ МАШИНЫ (только для админов)
-        // ============================================
+        // ============================================================
+        // 4. ДОБАВЛЕНИЕ МАШИНЫ
+        // ============================================================
         async function addCar() {
             if (!currentUser) {
                 alert('Вы не авторизованы');
@@ -229,38 +226,27 @@
             }
         }
 
-        // Автоматический поиск при вводе
-        document.getElementById('nfcInput').addEventListener('change', searchByNFC);
-        
-        // Авто-вход при загрузке (если уже залогинены)
+        // ============================================================
+        // 5. АВТО-ВХОД ПРИ ЗАГРУЗКЕ
+        // ============================================================
         auth.onAuthStateChanged(user => {
-            if (user) {
-                // Проверяем, является ли админом
-                db.ref('admins').once('value').then(snapshot => {
-                    const admins = snapshot.val();
-                    let isAdmin = false;
-                    for (let key in admins) {
-                        if (admins[key].email === user.email) {
-                            isAdmin = true;
-                            currentUser = user;
-                            currentUserData = admins[key];
-                            break;
-                        }
-                    }
-                    if (isAdmin) {
-                        document.getElementById('loginBlock').classList.add('hidden');
-                        document.getElementById('mainBlock').classList.remove('hidden');
-                        document.getElementById('adminPanel').classList.remove('hidden');
-                        document.getElementById('adminName').textContent = currentUserData.name || user.email;
-                    } else {
-                        auth.signOut();
-                    }
-                });
+            if (user && ALLOWED_ADMINS.includes(user.email)) {
+                currentUser = user;
+                currentAdminEmail = user.email;
+                document.getElementById('loginBlock').classList.add('hidden');
+                document.getElementById('mainBlock').classList.remove('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminName').textContent = user.email;
+            } else if (user) {
+                // Если залогинен, но не админ — выкидываем
+                auth.signOut();
             }
         });
 
-        console.log('✅ Система готова! Админы из базы:');
-        db.ref('admins').once('value').then(s => console.log(s.val()));
+        // Автопоиск при вводе
+        document.getElementById('nfcInput').addEventListener('change', searchByNFC);
+
+        console.log('✅ Админы:', ALLOWED_ADMINS);
     </script>
 </body>
 </html>
