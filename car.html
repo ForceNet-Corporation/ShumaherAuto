@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarDetector - Информация об авто</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container" id="carInfo">
+        <ul id="carList">
+            <li>Загрузка...</li>
+        </ul>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCm9GeIcOtrR3cbWv0fSash5sT7sL9S1rk",
+            authDomain: "testwebapp-4db03.firebaseapp.com",
+            projectId: "testwebapp-4db03",
+            storageBucket: "testwebapp-4db03.firebasestorage.app",
+            messagingSenderId: "838164449927",
+            appId: "1:838164449927:web:279f3b6e72fdffabde0622"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function getTagIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        function loadCarData() {
+            const tagId = getTagIdFromURL();
+            const list = document.getElementById('carList');
+
+            if (!tagId) {
+                list.innerHTML = '<li>Отсканируйте NFC-метку</li>';
+                return;
+            }
+
+            list.innerHTML = '<li>Загрузка...</li>';
+
+            db.collection('clients').doc(tagId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        list.innerHTML = `
+                            <li><strong>Владелец:</strong> ${data.name || 'Не указано'}</li>
+                            <li><strong>Автомобиль:</strong> ${data.carModel || 'Не указано'}</li>
+                            <li><strong>Телефон:</strong> ${data.phone || 'Не указан'}</li>
+                            <li><strong>Метка:</strong> ${tagId}</li>
+                        `;
+                    } else {
+                        list.innerHTML = `<li>Клиент с меткой ${tagId} не найден</li>`;
+                    }
+                })
+                .catch(() => {
+                    list.innerHTML = '<li>Ошибка загрузки данных</li>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCarData);
+    </script>
+</body>
+</html>

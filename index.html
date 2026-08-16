@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarDetector</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container" id="carInfo">
+        <ul id="carList">
+            <li>Поднесите NFC-метку к телефону</li>
+        </ul>
+    </div>
+    <div class="down">
+        <button class="reg" onclick="openLoginModal()">Войти</button>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+            <h2>Вход в админ-панель</h2>
+            <label>Email</label>
+            <input type="email" id="adminEmail" placeholder="admin@autosystem.com" value="az99arseniy@gmail.com">
+            <label>Пароль</label>
+            <input type="password" id="adminPassword" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') loginAdmin()">
+            <button class="btn-login" onclick="loginAdmin()">Войти</button>
+            <div class="error-msg" id="loginError">Неверный email или пароль</div>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
