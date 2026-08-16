@@ -51,9 +51,12 @@
                         const data = doc.data();
                         list.innerHTML = `
                             <li><strong>Владелец:</strong> ${data.name || 'Не указано'}</li>
-                            <li><strong>Автомобиль:</strong> ${data.carModel || 'Не указано'}</li>
+                            <li><strong>Автомобиль:</strong> ${data.car || 'Не указано'}</li>
+                            <li><strong>Модель:</strong> ${data.model || 'Не указана'}</li>
+                            <li><strong>Гос. номер:</strong> ${data['gos-num'] || 'Не указан'}</li>
+                            <li><strong>VIN:</strong> ${data['vin-num'] || 'Не указан'}</li>
                             <li><strong>Телефон:</strong> ${data.phone || 'Не указан'}</li>
-                            <li><strong>Метка:</strong> ${tagId}</li>
+                            <li><strong>Пробег:</strong> ${data.mileage || 'Не указан'}</li>
                         `;
                     } else {
                         list.innerHTML = `<li>Клиент с меткой ${tagId} не найден</li>`;
