@@ -91,10 +91,26 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // ============================================================
+        // 🔒 СПИСОК АДМИНОВ — ТОЛЬКО ОНИ МОГУТ ЗАЙТИ В АДМИНКУ
+        // ============================================================
+        const ADMIN_EMAILS = ['az99arseniy@gmail.com', 'arseniydrummer@gmail.com'];
+        // ДОБАВЛЯЙТЕ НОВЫХ АДМИНОВ СЮДА ЧЕРЕЗ ЗАПЯТУЮ
+
+        // ============================================================
+        // 🔐 ПРОВЕРКА АВТОРИЗАЦИИ — ДВОЙНАЯ ЗАЩИТА
+        // ============================================================
         auth.onAuthStateChanged((user) => {
             if (!user) {
+                // Не залогинен → на главную
+                window.location.href = 'index.html';
+            } else if (!ADMIN_EMAILS.includes(user.email)) {
+                // Залогинен, но НЕ АДМИН → выкидываем и на главную
+                auth.signOut();
+                alert('⛔ Доступ только для администратора!');
                 window.location.href = 'index.html';
             } else {
+                // Всё ОК — показываем админку
                 document.getElementById('adminEmailDisplay').textContent = user.email;
                 loadClients();
             }
