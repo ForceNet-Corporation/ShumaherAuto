@@ -45,7 +45,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const ADMIN_EMAIL = 'az99arseniy@gmail.com';
 
         function getTagIdFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -114,19 +113,18 @@
             }
 
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    if (userCredential.user.email === ADMIN_EMAIL) {
-                        window.location.href = 'admin-panel.html';
-                    } else {
-                        auth.signOut();
-                        errorEl.textContent = 'Доступ только для администратора!';
-                        errorEl.classList.add('show');
-                    }
+                .then(() => {
+                    window.location.href = 'admin-panel.html';
                 })
                 .catch((error) => {
                     let msg = error.message;
-                    if (msg.includes('user-not-found')) msg = 'Пользователь не найден';
-                    else if (msg.includes('wrong-password')) msg = 'Неверный пароль';
+                    if (msg.includes('user-not-found')) {
+                        msg = 'Пользователь не найден. Создайте его в Firebase Console → Authentication → Users';
+                    } else if (msg.includes('wrong-password')) {
+                        msg = 'Неверный пароль';
+                    } else if (msg.includes('too-many-requests')) {
+                        msg = 'Слишком много попыток. Попробуйте позже.';
+                    }
                     errorEl.textContent = msg;
                     errorEl.classList.add('show');
                 });
