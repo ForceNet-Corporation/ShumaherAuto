@@ -2,135 +2,265 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarDetector</title>
-    <link rel="stylesheet" href="css/main.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <title>Поиск по NFC</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .hidden { display: none; }
+        .admin-panel { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #result { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
 </head>
 <body>
-    <div class="container" id="carInfo">
-        <ul id="carList">
-            <li>Поднесите NFC-метку к телефону</li>
-        </ul>
-    </div>
-    <div class="down">
-        <button class="reg" onclick="openLoginModal()">Войти</button>
+
+    <!-- ===== БЛОК ВХОДА ===== -->
+    <div id="loginBlock">
+        <h2>🔐 Вход для администраторов</h2>
+        <input type="email" id="loginEmail" placeholder="Email" value="admin1@mail.ru">
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+        <div id="loginError" class="error"></div>
     </div>
 
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <button class="modal-close" onclick="closeLoginModal()">×</button>
-            <h2>Вход в админ-панель</h2>
-            <label>Email</label>
-            <input type="email" id="adminEmail" placeholder="admin@autosystem.com" value="az99arseniy@gmail.com">
-            <label>Пароль</label>
-            <input type="password" id="adminPassword" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') loginAdmin()">
-            <button class="btn-login" onclick="loginAdmin()">Войти</button>
-            <div class="error-msg" id="loginError">Неверный email или пароль</div>
+    <!-- ===== ОСНОВНОЙ БЛОК (после входа) ===== -->
+    <div id="mainBlock" class="hidden">
+        <h2>🏁 Поиск по NFC-метке</h2>
+        <p>Приложите метку или введите ключ вручную:</p>
+        
+        <input type="text" id="nfcInput" placeholder="Госномер или VIN...">
+        <button onclick="searchByNFC()">🔍 Поиск</button>
+        
+        <button onclick="logout()" style="background:#dc3545; margin-top:10px;">🚪 Выйти</button>
+        
+        <div id="result">
+            <p><strong>Госномер:</strong> <span id="display-gos-num"></span></p>
+            <p><strong>Авто:</strong> <span id="display-car"></span></p>
+            <p><strong>Модель:</strong> <span id="display-model"></span></p>
+            <p><strong>VIN:</strong> <span id="display-vin-num"></span></p>
+            <p><strong>Телефон:</strong> <span id="display-phone"></span></p>
+            <p><strong>ФИО:</strong> <span id="display-name"></span></p>
+            <p><strong>Пробег:</strong> <span id="display-mileage"></span> км</p>
+        </div>
+        
+        <div id="notFound" class="error hidden">❌ Данные не найдены</div>
+        
+        <!-- ===== АДМИН-ПАНЕЛЬ (видна только админам) ===== -->
+        <div id="adminPanel" class="admin-panel hidden">
+            <h3>⚙️ Панель администратора</h3>
+            <p>Вы вошли как: <span id="adminName"></span></p>
+            
+            <h4>Добавить запись</h4>
+            <input type="text" id="newGosNum" placeholder="Госномер (А123ВС77)">
+            <input type="text" id="newCar" placeholder="Марка (Toyota)">
+            <input type="text" id="newModel" placeholder="Модель (Camry)">
+            <input type="text" id="newVin" placeholder="VIN номер">
+            <input type="text" id="newPhone" placeholder="Телефон (+79001234567)">
+            <input type="text" id="newName" placeholder="ФИО владельца">
+            <input type="text" id="newMileage" placeholder="Пробег (125000)">
+            <button onclick="addCar()">➕ Добавить машину</button>
+            <div id="addResult"></div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
+        // 🔧 КОНФИГУРАЦИЯ FIREBASE
         const firebaseConfig = {
-            apiKey: "AIzaSyCm9GeIcOtrR3cbWv0fSash5sT7sL9S1rk",
-            authDomain: "testwebapp-4db03.firebaseapp.com",
-            projectId: "testwebapp-4db03",
-            storageBucket: "testwebapp-4db03.firebasestorage.app",
-            messagingSenderId: "838164449927",
-            appId: "1:838164449927:web:279f3b6e72fdffabde0622"
+            apiKey: "ВАШ_API_KEY",
+            authDomain: "ВАШ_ПРОЕКТ.firebaseapp.com",
+            databaseURL: "https://ВАШ_ПРОЕКТ-default-rtdb.firebaseio.com",
+            projectId: "ВАШ_ПРОЕКТ",
+            storageBucket: "ВАШ_ПРОЕКТ.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         const auth = firebase.auth();
-        const ADMIN_EMAIL = 'az99arseniy@gmail.com';
+        const db = firebase.database();
 
-        function getTagIdFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
+        let currentUser = null;
+        let currentUserData = null;
 
-        function loadCarData() {
-            const tagId = getTagIdFromURL();
-            const list = document.getElementById('carList');
-
-            if (!tagId) {
-                list.innerHTML = '<li>Отсканируйте NFC-метку</li>';
-                return;
-            }
-
-            list.innerHTML = '<li>Загрузка...</li>';
-
-            db.collection('clients').doc(tagId).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        list.innerHTML = `
-                            <li><strong>Гос номер:</strong> ${data.gos-num || 'Не указано'}</li>
-                            <li><strong>Авто:</strong> ${data.car || 'Не указано'}</li>
-                            <li><strong>Модель:</strong> ${data.model || 'Не указано'}</li>
-                            <li><strong>Вин:</strong> ${data.vin-num || 'Не указано'}</li>
-                            <li><strong>Телефон:</strong> ${data.phone || 'Не указано'}</li>
-                            <li><strong>Фио:</strong> ${data.name || 'Не указан'}</li>
-                            <li><strong>Пробег:</strong> ${data.mileage}</li>
-                        `;
-                    } else {
-                        list.innerHTML = `<li>Клиент с меткой ${tagId} не найден</li>`;
-                    }
-                })
-                .catch(() => {
-                    list.innerHTML = '<li>Ошибка загрузки данных</li>';
-                });
-        }
-
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.add('active');
-            document.getElementById('loginError').classList.remove('show');
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
-            document.getElementById('adminPassword').value = '';
-            document.getElementById('loginError').classList.remove('show');
-        }
-
-        document.getElementById('loginModal').addEventListener('click', function(e) {
-            if (e.target === this) closeLoginModal();
-        });
-
-        function loginAdmin() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value;
+        // ============================================
+        // 1. ФУНКЦИЯ ВХОДА
+        // ============================================
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
+            
+            errorEl.textContent = '';
 
-            if (!email || !password) {
-                errorEl.textContent = 'Заполните все поля!';
-                errorEl.classList.add('show');
+            try {
+                // Авторизация через Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                
+                // Проверяем, есть ли пользователь в списке админов
+                const adminsRef = db.ref('admins');
+                const snapshot = await adminsRef.once('value');
+                const admins = snapshot.val();
+                
+                let isAdmin = false;
+                let adminName = '';
+                
+                // Перебираем всех админов
+                for (let key in admins) {
+                    if (admins[key].email === currentUser.email) {
+                        isAdmin = true;
+                        adminName = admins[key].name || currentUser.email;
+                        currentUserData = admins[key];
+                        break;
+                    }
+                }
+                
+                if (isAdmin) {
+                    // ✅ Вход разрешён
+                    document.getElementById('loginBlock').classList.add('hidden');
+                    document.getElementById('mainBlock').classList.remove('hidden');
+                    document.getElementById('adminPanel').classList.remove('hidden');
+                    document.getElementById('adminName').textContent = adminName;
+                    document.getElementById('loginError').textContent = '';
+                } else {
+                    // ❌ Не в списке админов
+                    await auth.signOut();
+                    errorEl.textContent = '❌ У вас нет прав администратора';
+                }
+                
+            } catch (error) {
+                errorEl.textContent = '❌ Ошибка: ' + error.message;
+            }
+        }
+
+        // ============================================
+        // 2. ВЫХОД
+        // ============================================
+        function logout() {
+            auth.signOut();
+            document.getElementById('loginBlock').classList.remove('hidden');
+            document.getElementById('mainBlock').classList.add('hidden');
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('hidden');
+            currentUser = null;
+            currentUserData = null;
+        }
+
+        // ============================================
+        // 3. ПОИСК ПО КЛЮЧУ
+        // ============================================
+        async function searchByNFC() {
+            const key = document.getElementById('nfcInput').value.trim();
+            
+            if (!key) {
+                alert('Введите госномер или VIN');
                 return;
             }
 
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    if (userCredential.user.email === ADMIN_EMAIL) {
-                        window.location.href = 'admin-panel.html';
+            try {
+                const snapshot = await db.ref('cars/' + key).once('value');
+                const data = snapshot.val();
+                
+                if (data) {
+                    document.getElementById('display-gos-num').textContent = data['gos-num'] || '—';
+                    document.getElementById('display-car').textContent = data.car || '—';
+                    document.getElementById('display-model').textContent = data.model || '—';
+                    document.getElementById('display-vin-num').textContent = data['vin-num'] || '—';
+                    document.getElementById('display-phone').textContent = data.phone || '—';
+                    document.getElementById('display-name').textContent = data.name || '—';
+                    document.getElementById('display-mileage').textContent = data.mileage || '—';
+                    
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('notFound').classList.add('hidden');
+                } else {
+                    document.getElementById('result').style.display = 'none';
+                    document.getElementById('notFound').classList.remove('hidden');
+                }
+            } catch (error) {
+                alert('⚠️ Ошибка: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // 4. ДОБАВЛЕНИЕ МАШИНЫ (только для админов)
+        // ============================================
+        async function addCar() {
+            if (!currentUser) {
+                alert('Вы не авторизованы');
+                return;
+            }
+            
+            const gosNum = document.getElementById('newGosNum').value.trim();
+            if (!gosNum) {
+                document.getElementById('addResult').textContent = '❌ Введите госномер';
+                document.getElementById('addResult').className = 'error';
+                return;
+            }
+            
+            const carData = {
+                'gos-num': gosNum,
+                'car': document.getElementById('newCar').value.trim() || '—',
+                'model': document.getElementById('newModel').value.trim() || '—',
+                'vin-num': document.getElementById('newVin').value.trim() || '—',
+                'phone': document.getElementById('newPhone').value.trim() || '—',
+                'name': document.getElementById('newName').value.trim() || '—',
+                'mileage': document.getElementById('newMileage').value.trim() || '0'
+            };
+            
+            try {
+                await db.ref('cars/' + gosNum).set(carData);
+                document.getElementById('addResult').textContent = '✅ Машина добавлена!';
+                document.getElementById('addResult').className = 'success';
+                
+                // Очищаем поля
+                document.querySelectorAll('#adminPanel input').forEach(inp => inp.value = '');
+                
+            } catch (error) {
+                document.getElementById('addResult').textContent = '❌ Ошибка: ' + error.message;
+                document.getElementById('addResult').className = 'error';
+            }
+        }
+
+        // Автоматический поиск при вводе
+        document.getElementById('nfcInput').addEventListener('change', searchByNFC);
+        
+        // Авто-вход при загрузке (если уже залогинены)
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Проверяем, является ли админом
+                db.ref('admins').once('value').then(snapshot => {
+                    const admins = snapshot.val();
+                    let isAdmin = false;
+                    for (let key in admins) {
+                        if (admins[key].email === user.email) {
+                            isAdmin = true;
+                            currentUser = user;
+                            currentUserData = admins[key];
+                            break;
+                        }
+                    }
+                    if (isAdmin) {
+                        document.getElementById('loginBlock').classList.add('hidden');
+                        document.getElementById('mainBlock').classList.remove('hidden');
+                        document.getElementById('adminPanel').classList.remove('hidden');
+                        document.getElementById('adminName').textContent = currentUserData.name || user.email;
                     } else {
                         auth.signOut();
-                        errorEl.textContent = 'Доступ только для администратора!';
-                        errorEl.classList.add('show');
                     }
-                })
-                .catch((error) => {
-                    let msg = error.message;
-                    if (msg.includes('user-not-found')) msg = 'Пользователь не найден';
-                    else if (msg.includes('wrong-password')) msg = 'Неверный пароль';
-                    errorEl.textContent = msg;
-                    errorEl.classList.add('show');
                 });
-        }
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded', loadCarData);
+        console.log('✅ Система готова! Админы из базы:');
+        db.ref('admins').once('value').then(s => console.log(s.val()));
     </script>
 </body>
 </html>
