@@ -2,82 +2,137 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Поиск по карте</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarDetector</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <h2>Приложите NFC-метку</h2>
-    
-    <input type="text" id="nfcInput" placeholder="Данные с метки..." style="width:300px;">
-    <button onclick="searchByNFC()">🔍 Поиск</button>
-    
-    <div id="result" style="margin-top:20px; border:1px solid #ccc; padding:15px; display:none;">
-        <p><strong>Госномер:</strong> <span id="display-gos-num"></span></p>
-        <p><strong>Авто:</strong> <span id="display-car"></span></p>
-        <p><strong>Модель:</strong> <span id="display-model"></span></p>
-        <p><strong>VIN:</strong> <span id="display-vin-num"></span></p>
-        <p><strong>Телефон:</strong> <span id="display-phone"></span></p>
-        <p><strong>ФИО:</strong> <span id="display-name"></span></p>
-        <p><strong>Пробег:</strong> <span id="display-mileage"></span> км</p>
+    <div class="container" id="carInfo">
+        <ul id="carList">
+            <li>Поднесите NFC-метку к телефону</li>
+        </ul>
+    </div>
+    <div class="down">
+        <button class="reg" onclick="openLoginModal()">Войти</button>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeLoginModal()">×</button>
+            <h2>Вход в админ-панель</h2>
+            <label>Email</label>
+            <input type="email" id="adminEmail" placeholder="Введите email">
+            <label>Пароль</label>
+            <input type="password" id="adminPassword" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') loginAdmin()">
+            <button class="btn-login" onclick="loginAdmin()">Войти</button>
+            <div class="error-msg" id="loginError">Неверный email или пароль</div>
+        </div>
+    </div>
 
     <script>
-        // 🔧 Ваша конфигурация Firebase
         const firebaseConfig = {
-            apiKey: "ВАШ_API_KEY",
-            authDomain: "ВАШ_ПРОЕКТ.firebaseapp.com",
-            databaseURL: "https://ВАШ_ПРОЕКТ-default-rtdb.firebaseio.com",
-            projectId: "ВАШ_ПРОЕКТ",
-            storageBucket: "ВАШ_ПРОЕКТ.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            apiKey: "AIzaSyCm9GeIcOtrR3cbWv0fSash5sT7sL9S1rk",
+            authDomain: "testwebapp-4db03.firebaseapp.com",
+            projectId: "testwebapp-4db03",
+            storageBucket: "testwebapp-4db03.firebasestorage.app",
+            messagingSenderId: "838164449927",
+            appId: "1:838164449927:web:279f3b6e72fdffabde0622"
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const ADMIN_EMAIL = 'az99arseniy@gmail.com';
 
-        // ⚡ Главная функция поиска
-        function searchByNFC() {
-            const key = document.getElementById('nfcInput').value.trim();
-            
-            if (!key) {
-                alert('Сначала приложите метку или введите ключ вручную');
+        function getTagIdFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        function loadCarData() {
+            const tagId = getTagIdFromURL();
+            const list = document.getElementById('carList');
+
+            if (!tagId) {
+                list.innerHTML = '<li>Отсканируйте NFC-метку</li>';
                 return;
             }
 
-            db.ref().child(key).once('value')
-                .then(snapshot => {
-                    const data = snapshot.val();
-                    
-                    if (data && typeof data === 'object') {
-                        document.getElementById('display-gos-num').textContent = data['gos-num'] || '—';
-                        document.getElementById('display-car').textContent = data.car || '—';
-                        document.getElementById('display-model').textContent = data.model || '—';
-                        document.getElementById('display-vin-num').textContent = data['vin-num'] || '—';
-                        document.getElementById('display-phone').textContent = data.phone || '—';
-                        document.getElementById('display-name').textContent = data.name || '—';
-                        document.getElementById('display-mileage').textContent = data.mileage || '—';
-                        
-                        document.getElementById('result').style.display = 'block';
+            list.innerHTML = '<li>Загрузка...</li>';
+
+            db.collection('clients').doc(tagId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        list.innerHTML = `
+                            <li><strong>Владелец:</strong> ${data.name || 'Не указано'}</li>
+                            <li><strong>Автомобиль:</strong> ${data.car || 'Не указано'}</li>
+                            <li><strong>Модель:</strong> ${data.model || 'Не указана'}</li>
+                            <li><strong>Гос. номер:</strong> ${data['gos-num'] || 'Не указан'}</li>
+                            <li><strong>VIN:</strong> ${data['vin-num'] || 'Не указан'}</li>
+                            <li><strong>Телефон:</strong> ${data.phone || 'Не указан'}</li>
+                            <li><strong>Пробег:</strong> ${data.mileage || 'Не указан'}</li>
+                        `;
                     } else {
-                        alert('❌ Данные по этому ключу не найдены');
-                        document.getElementById('result').style.display = 'none';
+                        list.innerHTML = `<li>Клиент с меткой ${tagId} не найден</li>`;
                     }
                 })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    alert('⚠️ Ошибка подключения к Firebase');
+                .catch(() => {
+                    list.innerHTML = '<li>Ошибка загрузки данных</li>';
                 });
         }
 
-        document.getElementById('nfcInput').addEventListener('change', function() {
-            if (this.value.trim()) {
-                searchByNFC();
-            }
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.remove('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').classList.remove('show');
+        }
+
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLoginModal();
         });
+
+        function loginAdmin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const errorEl = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorEl.textContent = 'Заполните все поля!';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    if (userCredential.user.email === ADMIN_EMAIL) {
+                        window.location.href = 'admin-panel.html';
+                    } else {
+                        auth.signOut();
+                        errorEl.textContent = 'Доступ только для администратора!';
+                        errorEl.classList.add('show');
+                    }
+                })
+                .catch((error) => {
+                    let msg = error.message;
+                    if (msg.includes('user-not-found')) msg = 'Пользователь не найден';
+                    else if (msg.includes('wrong-password')) msg = 'Неверный пароль';
+                    errorEl.textContent = msg;
+                    errorEl.classList.add('show');
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCarData);
     </script>
 </body>
 </html>
