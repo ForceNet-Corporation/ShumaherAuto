@@ -38,12 +38,14 @@
                             <th>Метка (UID)</th>
                             <th>Владелец</th>
                             <th>Автомобиль</th>
+                            <th>Модель</th>
+                            <th>Гос. номер</th>
                             <th>Телефон</th>
                             <th>Действие</th>
                         </tr>
                     </thead>
                     <tbody id="clientsTableBody">
-                        <tr><td colspan="5" class="empty">Загрузка...</td></tr>
+                        <tr><td colspan="7" class="empty">Загрузка...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -55,13 +57,21 @@
             <button class="modal-close" onclick="closeAddModal()">×</button>
             <h2>Добавить клиента</h2>
             <label>UID метки</label>
-            <input type="text" id="inputTagId" placeholder="TAG_123456789">
-            <label>Владелец</label>
+            <input type="text" id="inputTagId" placeholder="ivan">
+            <label>Владелец (ФИО)</label>
             <input type="text" id="inputName" placeholder="Иван Петров">
             <label>Автомобиль</label>
-            <input type="text" id="inputCarModel" placeholder="Toyota Camry">
+            <input type="text" id="inputCar" placeholder="Toyota">
+            <label>Модель</label>
+            <input type="text" id="inputModel" placeholder="Camry">
+            <label>Гос. номер</label>
+            <input type="text" id="inputGosNum" placeholder="A123BC">
+            <label>VIN номер</label>
+            <input type="text" id="inputVin" placeholder="JTDBE32KX60012345">
             <label>Телефон</label>
             <input type="text" id="inputPhone" placeholder="+7 999 123-45-67">
+            <label>Пробег</label>
+            <input type="text" id="inputMileage" placeholder="15000 км">
             <button class="btn-login" onclick="addClient()">Сохранить</button>
             <div class="error-msg" id="addError">Ошибка</div>
         </div>
@@ -80,10 +90,9 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        const ADMIN_EMAIL = 'az99arseniy@gmail.com';
 
         auth.onAuthStateChanged((user) => {
-            if (!user || user.email !== ADMIN_EMAIL) {
+            if (!user) {
                 window.location.href = 'index.html';
             } else {
                 document.getElementById('adminEmailDisplay').textContent = user.email;
@@ -99,7 +108,7 @@
 
         function loadClients() {
             const tbody = document.getElementById('clientsTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" class="empty">Загрузка...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="empty">Загрузка...</td></tr>';
 
             db.collection('clients').orderBy('name').get()
                 .then((snapshot) => {
@@ -111,7 +120,7 @@
                     document.getElementById('totalClients').textContent = clients.length;
 
                     if (clients.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" class="empty">Нет клиентов</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="7" class="empty">Нет клиентов</td></tr>';
                         return;
                     }
 
@@ -121,7 +130,9 @@
                             <tr>
                                 <td><span class="tag-id">${client.id}</span></td>
                                 <td>${client.name || '—'}</td>
-                                <td>${client.carModel || '—'}</td>
+                                <td>${client.car || '—'}</td>
+                                <td>${client.model || '—'}</td>
+                                <td>${client['gos-num'] || '—'}</td>
                                 <td>${client.phone || '—'}</td>
                                 <td><button class="btn-delete" onclick="deleteClient('${client.id}')">Удалить</button></td>
                             </tr>
@@ -130,7 +141,7 @@
                     tbody.innerHTML = html;
                 })
                 .catch(() => {
-                    tbody.innerHTML = '<tr><td colspan="5" class="empty">Ошибка загрузки</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
                 });
         }
 
@@ -144,14 +155,18 @@
         function openAddModal() {
             document.getElementById('addModal').classList.add('active');
             document.getElementById('addError').classList.remove('show');
+            document.getElementById('inputTagId').value = '';
+            document.getElementById('inputName').value = '';
+            document.getElementById('inputCar').value = '';
+            document.getElementById('inputModel').value = '';
+            document.getElementById('inputGosNum').value = '';
+            document.getElementById('inputVin').value = '';
+            document.getElementById('inputPhone').value = '';
+            document.getElementById('inputMileage').value = '';
         }
 
         function closeAddModal() {
             document.getElementById('addModal').classList.remove('active');
-            document.getElementById('inputTagId').value = '';
-            document.getElementById('inputName').value = '';
-            document.getElementById('inputCarModel').value = '';
-            document.getElementById('inputPhone').value = '';
         }
 
         document.getElementById('addModal').addEventListener('click', function(e) {
@@ -161,25 +176,37 @@
         function addClient() {
             const tagId = document.getElementById('inputTagId').value.trim();
             const name = document.getElementById('inputName').value.trim();
-            const carModel = document.getElementById('inputCarModel').value.trim();
+            const car = document.getElementById('inputCar').value.trim();
+            const model = document.getElementById('inputModel').value.trim();
+            const gosNum = document.getElementById('inputGosNum').value.trim();
+            const vin = document.getElementById('inputVin').value.trim();
             const phone = document.getElementById('inputPhone').value.trim();
+            const mileage = document.getElementById('inputMileage').value.trim();
             const errorEl = document.getElementById('addError');
 
-            if (!tagId || !name || !carModel || !phone) {
+            if (!tagId || !name || !car || !model || !gosNum || !vin || !phone || !mileage) {
                 errorEl.textContent = 'Заполните все поля!';
                 errorEl.classList.add('show');
                 return;
             }
 
-            db.collection('clients').doc(tagId).set({ name, carModel, phone })
-                .then(() => {
-                    closeAddModal();
-                    loadClients();
-                })
-                .catch((error) => {
-                    errorEl.textContent = 'Ошибка: ' + error.message;
-                    errorEl.classList.add('show');
-                });
+            db.collection('clients').doc(tagId).set({
+                name: name,
+                car: car,
+                model: model,
+                'gos-num': gosNum,
+                'vin-num': vin,
+                phone: phone,
+                mileage: mileage
+            })
+            .then(() => {
+                closeAddModal();
+                loadClients();
+            })
+            .catch((error) => {
+                errorEl.textContent = 'Ошибка: ' + error.message;
+                errorEl.classList.add('show');
+            });
         }
     </script>
 </body>
