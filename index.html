@@ -68,10 +68,13 @@
                     if (doc.exists) {
                         const data = doc.data();
                         list.innerHTML = `
-                            <li><strong>Владелец:</strong> ${data.name || 'Не указано'}</li>
-                            <li><strong>Автомобиль:</strong> ${data.carModel || 'Не указано'}</li>
-                            <li><strong>Телефон:</strong> ${data.phone || 'Не указан'}</li>
-                            <li><strong>Метка:</strong> ${tagId}</li>
+                            <li><strong>Гос номер:</strong> ${data.gos-num || 'Не указано'}</li>
+                            <li><strong>Авто:</strong> ${data.car || 'Не указано'}</li>
+                            <li><strong>Модель:</strong> ${data.model || 'Не указано'}</li>
+                            <li><strong>Вин:</strong> ${data.vin-num || 'Не указано'}</li>
+                            <li><strong>Телефон:</strong> ${data.phone || 'Не указано'}</li>
+                            <li><strong>Фио:</strong> ${data.name || 'Не указан'}</li>
+                            <li><strong>Пробег:</strong> ${data.mileage}</li>
                         `;
                     } else {
                         list.innerHTML = `<li>Клиент с меткой ${tagId} не найден</li>`;
