@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-    background-color: rgb(0, 0, 29);
+    background-color: black;
     border: 2px solid white;
     border-radius: 20px;
     padding: 30px;
@@ -45,7 +45,7 @@ body {
 }
 
 .down {
-    background-color: rgb(0, 0, 29);
+    background-color: black;
     border: 2px solid white;
     border-radius: 20px;
     text-align: center;
@@ -90,7 +90,7 @@ body {
 }
 
 .modal {
-    background: rgb(0, 0, 29);
+    background: black;
     border: 2px solid white;
     border-radius: 20px;
     padding: 40px;
@@ -169,7 +169,7 @@ body {
 }
 
 .admin-header {
-    background-color: rgb(0, 0, 58);
+    background-color: black;
     border: 2px solid white;
     border-radius: 20px;
     padding: 20px 30px;
@@ -221,7 +221,7 @@ body {
 }
 
 .stat-card {
-    background-color: rgb(0, 0, 58);
+    background-color: black;
     border: 2px solid white;
     border-radius: 20px;
     padding: 20px;
@@ -241,7 +241,7 @@ body {
 }
 
 .admin-panel {
-    background-color: rgb(0, 0, 58);
+    background-color: black;
     border: 2px solid white;
     border-radius: 20px;
     padding: 25px 30px;
