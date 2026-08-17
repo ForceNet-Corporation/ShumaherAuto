@@ -331,7 +331,6 @@ table tr:hover td {
     cursor: pointer;
     font-size: 12px;
     transition: 0.3s;
-    margin-bottom: 4px;
 }
 
 .btn-edit {
@@ -343,6 +342,8 @@ table tr:hover td {
     cursor: pointer;
     font-size: 12px;
     transition: 0.3s;
+    margin-bottom: 4px;
+    margin-right: 4px;
 }
 .btn-delete:hover {
     background: rgba(255, 107, 107, 0.25);
