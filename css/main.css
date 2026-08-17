@@ -322,6 +322,16 @@ table tr:hover td {
     transition: 0.3s;
 }
 
+.btn-edit {
+    background: rgba(0, 255, 34, 0.233);
+    border: 1px solid rgb(0, 255, 55);
+    border-radius: 6px;
+    color: #6bff72;
+    padding: 4px 14px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.3s;
+}
 .btn-delete:hover {
     background: rgba(255, 107, 107, 0.25);
 }
