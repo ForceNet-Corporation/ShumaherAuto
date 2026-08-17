@@ -208,16 +208,16 @@ body {
 
 .logout-btn {
     background: black;
-    border: 2px solid #ff6b6b;
+    border: 2px solid #ff0000;
     border-radius: 10px;
-    color: #ff6b6b;
+    color: #ff0000;
     padding: 8px 20px;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .logout-btn:hover {
-    background: rgb(50, 50, 80);
+    padding: 2px;
 }
 
 .admin-container {
@@ -331,6 +331,7 @@ table tr:hover td {
     cursor: pointer;
     font-size: 12px;
     transition: 0.3s;
+    margin-bottom: 4px;
 }
 
 .btn-edit {
