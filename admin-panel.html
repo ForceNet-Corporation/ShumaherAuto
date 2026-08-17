@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CarDetector - Админ-панель</title>
     <link rel="stylesheet" href="css/main.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -51,6 +52,7 @@
         </div>
     </div>
 
+    <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ===== -->
     <div class="modal-overlay" id="addModal">
         <div class="modal">
             <button class="modal-close" onclick="closeAddModal()">×</button>
@@ -76,6 +78,19 @@
         </div>
     </div>
 
+    <!-- ===== МОДАЛКА ПОВТОРНОГО ВХОДА ===== -->
+    <div class="modal-overlay" id="reAuthModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeReAuthModal()">×</button>
+            <h2>🔐 Подтверждение действия</h2>
+            <p class="modal-sub" style="color:rgba(255,255,255,0.4); margin-bottom:20px;">Введите пароль для подтверждения</p>
+            <label>Пароль</label>
+            <input type="password" id="reAuthPassword" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') confirmReAuth()">
+            <button class="btn-login" onclick="confirmReAuth()">Подтвердить</button>
+            <div class="error-msg" id="reAuthError">Неверный пароль</div>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCm9GeIcOtrR3cbWv0fSash5sT7sL9S1rk",
@@ -91,16 +106,16 @@
         const auth = firebase.auth();
 
         // ============================================================
-        // 🔒 СПИСОК АДМИНОВ — ТОЛЬКО ОНИ МОГУТ РАБОТАТЬ С БАЗОЙ
+        // 🔒 СПИСОК АДМИНОВ
         // ============================================================
-        const ADMIN_EMAILS = [
-            'az99arseniy@gmail.com',
-            'arseniydrummer@gmail.com'
-        ];
+        const ADMIN_EMAILS = ['az99arseniy@gmail.com', 'arseniydrummer@gmail.com'];
 
         // ============================================================
         // 🔐 ПРОВЕРКА АВТОРИЗАЦИИ
         // ============================================================
+        let reAuthTimer = null;
+        let isReAuthenticated = false;
+
         auth.onAuthStateChanged((user) => {
             if (!user) {
                 window.location.href = 'index.html';
@@ -120,6 +135,9 @@
             });
         }
 
+        // ============================================================
+        // 📋 ЗАГРУЗКА КЛИЕНТОВ
+        // ============================================================
         function loadClients() {
             const tbody = document.getElementById('clientsTableBody');
             tbody.innerHTML = '<tr><td colspan="7" class="empty">Загрузка...</td></tr>';
@@ -148,28 +166,116 @@
                                 <td>${client.model || '—'}</td>
                                 <td>${client['gos-num'] || '—'}</td>
                                 <td>${client.phone || '—'}</td>
-                                <td><button class="btn-delete" onclick="deleteClient('${client.id}')">Удалить</button></td>
+                                <td><button class="btn-delete" onclick="requestDelete('${client.id}')">Удалить</button></td>
                             </tr>
                         `;
                     });
                     tbody.innerHTML = html;
                 })
-                .catch((error) => {
-                    console.error('Ошибка загрузки:', error);
+                .catch(() => {
                     tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
                 });
         }
 
-        function deleteClient(clientId) {
-            if (!confirm('Удалить клиента ' + clientId + '?')) return;
-            db.collection('clients').doc(clientId).delete()
-                .then(() => loadClients())
+        // ============================================================
+        // 🛡️ ПОВТОРНЫЙ ВХОД (RE-AUTH)
+        // ============================================================
+        let pendingAction = null;
+        let pendingClientId = null;
+
+        function requestReAuth(action, clientId) {
+            pendingAction = action;
+            pendingClientId = clientId || null;
+            document.getElementById('reAuthModal').classList.add('active');
+            document.getElementById('reAuthPassword').value = '';
+            document.getElementById('reAuthError').classList.remove('show');
+            document.getElementById('reAuthPassword').focus();
+        }
+
+        function closeReAuthModal() {
+            document.getElementById('reAuthModal').classList.remove('active');
+            document.getElementById('reAuthPassword').value = '';
+            document.getElementById('reAuthError').classList.remove('show');
+            pendingAction = null;
+            pendingClientId = null;
+        }
+
+        document.getElementById('reAuthModal').addEventListener('click', function(e) {
+            if (e.target === this) closeReAuthModal();
+        });
+
+        function confirmReAuth() {
+            const password = document.getElementById('reAuthPassword').value;
+            const errorEl = document.getElementById('reAuthError');
+
+            if (!password) {
+                errorEl.textContent = 'Введите пароль!';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            const user = auth.currentUser;
+            if (!user) {
+                errorEl.textContent = 'Сессия истекла. Войдите заново.';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            // Повторная аутентификация
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+            user.reauthenticateWithCredential(credential)
+                .then(() => {
+                    // Успешно!
+                    isReAuthenticated = true;
+                    closeReAuthModal();
+
+                    // Выполняем отложенное действие
+                    if (pendingAction === 'delete') {
+                        deleteClient(pendingClientId);
+                    } else if (pendingAction === 'add') {
+                        executeAddClient();
+                    }
+
+                    // Сбрасываем через 5 минут
+                    if (reAuthTimer) clearTimeout(reAuthTimer);
+                    reAuthTimer = setTimeout(() => {
+                        isReAuthenticated = false;
+                    }, 300000); // 5 минут
+                })
                 .catch((error) => {
-                    console.error('Ошибка удаления:', error);
-                    alert('Ошибка удаления: ' + error.message);
+                    let msg = error.message;
+                    if (msg.includes('wrong-password')) {
+                        msg = '❌ Неверный пароль';
+                    } else if (msg.includes('too-many-requests')) {
+                        msg = '❌ Слишком много попыток. Попробуйте позже.';
+                    }
+                    errorEl.textContent = msg;
+                    errorEl.classList.add('show');
                 });
         }
 
+        // ============================================================
+        // 🗑️ УДАЛЕНИЕ
+        // ============================================================
+        function requestDelete(clientId) {
+            if (!isReAuthenticated) {
+                requestReAuth('delete', clientId);
+                return;
+            }
+            if (confirm(`Удалить клиента ${clientId}?`)) {
+                deleteClient(clientId);
+            }
+        }
+
+        function deleteClient(clientId) {
+            db.collection('clients').doc(clientId).delete()
+                .then(() => loadClients())
+                .catch(() => alert('Ошибка удаления'));
+        }
+
+        // ============================================================
+        // ➕ ДОБАВЛЕНИЕ
+        // ============================================================
         function openAddModal() {
             document.getElementById('addModal').classList.add('active');
             document.getElementById('addError').classList.remove('show');
@@ -192,6 +298,14 @@
         });
 
         function addClient() {
+            if (!isReAuthenticated) {
+                requestReAuth('add');
+                return;
+            }
+            executeAddClient();
+        }
+
+        function executeAddClient() {
             const tagId = document.getElementById('inputTagId').value.trim();
             const name = document.getElementById('inputName').value.trim();
             const car = document.getElementById('inputCar').value.trim();
@@ -222,7 +336,6 @@
                 loadClients();
             })
             .catch((error) => {
-                console.error('Ошибка добавления:', error);
                 errorEl.textContent = 'Ошибка: ' + error.message;
                 errorEl.classList.add('show');
             });
