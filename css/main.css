@@ -211,7 +211,7 @@ body {
     border: 2px solid #ff0000;
     border-radius: 10px;
     color: #ff0000;
-    padding: 8px 20px;
+    padding: 8px 62px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -342,8 +342,8 @@ table tr:hover td {
     cursor: pointer;
     font-size: 12px;
     transition: 0.3s;
-    margin-bottom: 4px;
-    margin-right: 4px;
+    margin-bottom: 6px;
+    margin-right: 6px;
 }
 .btn-delete:hover {
     background: rgba(255, 107, 107, 0.25);
