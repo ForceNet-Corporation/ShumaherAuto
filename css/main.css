@@ -40,7 +40,6 @@ body {
     padding: 30px;
     margin-bottom: 20px;
     text-align: center;
-    backdrop-filter: blur(4px);
 }
 
 .container ul {
