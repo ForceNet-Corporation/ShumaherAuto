@@ -16,29 +16,33 @@
     
     <style>
         /* ============================================================
-           МОБИЛЬНЫЙ ДИЗАЙН
+           БАЗОВЫЕ СТИЛИ
            ============================================================ */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
         }
         
         body {
             padding: 10px !important;
-            background: #0f0c29;
+            background: #000000;
             font-family: 'Inter', Arial, sans-serif;
+            min-height: 100vh;
         }
         
-        /* --- ШАПКА --- */
+        /* ============================================================
+           ШАПКА
+           ============================================================ */
         .admin-header {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 16px;
             padding: 12px 16px;
             margin-bottom: 16px;
@@ -47,27 +51,30 @@
         .admin-header .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .header-logo {
-            height: 40px;
-            width: 40px;
+            height: 55px;
+            width: 55px;
             object-fit: contain;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-            padding: 4px;
+            border-radius: 0;
+            background: transparent;
+            padding: 0;
         }
         
         .admin-header .brand {
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            letter-spacing: -0.3px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
         
-        .admin-header .brand span {
-            color: #667eea;
+        .admin-header .brand .red {
+            color: #ff1a1a;
+        }
+        
+        .admin-header .brand .white {
+            color: #ffffff;
         }
         
         .admin-header .header-right {
@@ -78,7 +85,7 @@
         }
         
         .admin-email {
-            color: rgba(255,255,255,0.4);
+            color: rgba(255,255,255,0.3);
             font-size: 11px;
             max-width: 120px;
             overflow: hidden;
@@ -87,13 +94,13 @@
         }
         
         .logout-btn {
-            background: rgba(255,107,107,0.12);
-            border: 1px solid rgba(255,107,107,0.2);
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 8px;
-            color: #ff6b6b;
+            color: #ff1a1a;
             padding: 6px 14px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
             white-space: nowrap;
@@ -103,7 +110,9 @@
             transform: scale(0.95);
         }
         
-        /* --- СТАТИСТИКА --- */
+        /* ============================================================
+           СТАТИСТИКА
+           ============================================================ */
         .stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -112,37 +121,49 @@
         }
         
         .stat-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 14px;
             padding: 16px;
             text-align: center;
-            backdrop-filter: blur(8px);
         }
         
         .stat-number {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ff1a1a;
         }
         
         .stat-label {
-            color: rgba(255,255,255,0.35);
+            color: rgba(255,255,255,0.4);
             font-size: 11px;
             margin-top: 2px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
-        /* --- ПАНЕЛЬ --- */
+        /* ============================================================
+           ПАНЕЛЬ
+           ============================================================ */
         .admin-panel {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 16px;
             padding: 16px;
-            backdrop-filter: blur(8px);
+            position: relative;
+        }
+        
+        /* Градиент сверху */
+        .admin-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff1a1a, #ffffff, #ff1a1a);
+            border-radius: 16px 16px 0 0;
+            z-index: 1;
         }
         
         .panel-header {
@@ -152,6 +173,8 @@
             margin-bottom: 14px;
             flex-wrap: wrap;
             gap: 10px;
+            position: relative;
+            z-index: 2;
         }
         
         .panel-header h2 {
@@ -168,10 +191,10 @@
         }
         
         .btn-add {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 10px;
-            color: white;
+            color: #ff1a1a;
             padding: 8px 18px;
             font-size: 13px;
             font-weight: 600;
@@ -184,11 +207,15 @@
             transform: scale(0.95);
         }
         
-        /* --- КАРТОЧКИ КЛИЕНТОВ (вместо таблицы) --- */
+        /* ============================================================
+           КАРТОЧКИ КЛИЕНТОВ
+           ============================================================ */
         .clients-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            position: relative;
+            z-index: 2;
         }
         
         .client-card {
@@ -200,6 +227,8 @@
             justify-content: space-between;
             align-items: center;
             transition: 0.2s;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .client-card:active {
@@ -246,21 +275,23 @@
         
         .client-card .client-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-shrink: 0;
-            margin-left: 10px;
         }
         
         .btn-edit {
-            background: rgba(102,126,234,0.15);
-            border: 1px solid rgba(102,126,234,0.2);
+            background: #000000;
+            border: 2px solid #00cc44;
             border-radius: 8px;
-            color: #667eea;
-            padding: 6px 12px;
-            font-size: 16px;
+            color: #00cc44;
+            padding: 6px 14px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
             line-height: 1;
+            min-width: 70px;
+            text-align: center;
         }
         
         .btn-edit:active {
@@ -268,15 +299,18 @@
         }
         
         .btn-delete {
-            background: rgba(255,107,107,0.12);
-            border: 1px solid rgba(255,107,107,0.15);
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 8px;
-            color: #ff6b6b;
-            padding: 6px 12px;
-            font-size: 16px;
+            color: #ff1a1a;
+            padding: 6px 14px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
             line-height: 1;
+            min-width: 70px;
+            text-align: center;
         }
         
         .btn-delete:active {
@@ -291,7 +325,7 @@
         }
         
         /* ============================================================
-           МОДАЛЬНЫЕ ОКНА (мобильные)
+           МОДАЛЬНЫЕ ОКНА
            ============================================================ */
         .modal-overlay {
             display: none;
@@ -300,8 +334,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
             z-index: 999;
             justify-content: center;
             align-items: flex-end;
@@ -313,14 +347,14 @@
         }
         
         .modal {
-            background: #1a1a2e;
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 20px 20px 0 0;
             padding: 24px 20px 30px;
             max-width: 500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.06);
             animation: slideUp 0.3s ease;
             position: relative;
         }
@@ -336,6 +370,19 @@
             }
         }
         
+        /* Градиент сверху для модалок */
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff1a1a, #ffffff, #ff1a1a);
+            border-radius: 20px 20px 0 0;
+            z-index: 1;
+        }
+        
         .modal-close {
             position: absolute;
             top: 12px;
@@ -346,6 +393,7 @@
             font-size: 26px;
             cursor: pointer;
             padding: 4px;
+            z-index: 2;
         }
         
         .modal-close:active {
@@ -358,12 +406,16 @@
             font-weight: 700;
             margin-bottom: 6px;
             padding-right: 30px;
+            position: relative;
+            z-index: 2;
         }
         
         .modal .modal-sub {
             color: rgba(255,255,255,0.3);
             font-size: 13px;
             margin-bottom: 18px;
+            position: relative;
+            z-index: 2;
         }
         
         .modal label {
@@ -373,22 +425,26 @@
             font-weight: 500;
             margin-bottom: 4px;
             margin-top: 10px;
+            position: relative;
+            z-index: 2;
         }
         
         .modal input {
             width: 100%;
             padding: 12px 14px;
-            background: rgba(255,255,255,0.06);
-            border: 2px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.08);
             border-radius: 10px;
             color: white;
             font-size: 15px;
             outline: none;
             transition: 0.2s;
+            position: relative;
+            z-index: 2;
         }
         
         .modal input:focus {
-            border-color: #667eea;
+            border-color: #ff1a1a;
             background: rgba(255,255,255,0.08);
         }
         
@@ -399,15 +455,17 @@
         .modal .btn-login {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
+            background: #000000;
+            border: 2px solid #ff1a1a;
             border-radius: 12px;
-            color: white;
+            color: #ff1a1a;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
             margin-top: 16px;
+            position: relative;
+            z-index: 2;
         }
         
         .modal .btn-login:active {
@@ -415,8 +473,8 @@
         }
         
         .modal .btn-login.secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.4);
             margin-top: 8px;
         }
         
@@ -425,58 +483,66 @@
         }
         
         .modal .error-msg {
-            color: #ff6b6b;
+            color: #ff1a1a;
             font-size: 13px;
             margin-top: 12px;
             display: none;
             padding: 10px 14px;
-            background: rgba(255,107,107,0.08);
+            background: rgba(255,26,26,0.08);
+            border: 1px solid rgba(255,26,26,0.15);
             border-radius: 8px;
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
         
         .modal .error-msg.show {
             display: block;
         }
         
-        /* --- Табы в редактировании --- */
+        /* ============================================================
+           ТАБЫ В РЕДАКТИРОВАНИИ
+           ============================================================ */
         .edit-tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
         }
         
         .edit-tabs button {
             flex: 1;
             padding: 10px;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.08);
             border-radius: 10px;
-            background: transparent;
-            color: rgba(255,255,255,0.4);
+            background: #000000;
+            color: rgba(255,255,255,0.3);
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
         }
         
         .edit-tabs button.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-color: transparent;
-            color: white;
+            border-color: #ff1a1a;
+            color: #ff1a1a;
         }
         
         .edit-tabs button:active {
             transform: scale(0.95);
         }
         
-        /* --- Адаптив для очень маленьких экранов --- */
+        /* ============================================================
+           АДАПТИВ
+           ============================================================ */
         @media (max-width: 400px) {
             .admin-header .brand {
-                font-size: 14px;
+                font-size: 18px;
             }
             .header-logo {
-                height: 32px;
-                width: 32px;
+                height: 45px;
+                width: 45px;
             }
             .admin-email {
                 font-size: 10px;
@@ -487,13 +553,17 @@
             }
             .client-card {
                 padding: 12px;
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: stretch;
             }
             .client-card .client-actions {
-                margin-left: 0;
-                margin-top: 8px;
-                width: 100%;
                 justify-content: flex-end;
+                margin-top: 6px;
+            }
+            .btn-edit, .btn-delete {
+                min-width: 60px;
+                font-size: 12px;
+                padding: 5px 10px;
             }
             .modal {
                 padding: 20px 16px 24px;
@@ -520,7 +590,9 @@
     <div class="admin-header">
         <div class="header-left">
             <img src="assets/shum-logo.png" alt="logo" class="header-logo">
-            <span class="brand">Shumaher<span>Auto</span></span>
+            <span class="brand">
+                <span class="red">Shumaher</span><span class="white">Auto</span>
+            </span>
         </div>
         <div class="header-right">
             <span class="admin-email" id="adminEmailDisplay">admin</span>
@@ -746,8 +818,8 @@
                                     </div>
                                 </div>
                                 <div class="client-actions">
-                                    <button class="btn-edit" onclick="openEdit('${client.id}')">✏️</button>
-                                    <button class="btn-delete" onclick="deleteClient('${client.id}')">🗑️</button>
+                                    <button class="btn-edit" onclick="openEdit('${client.id}')">Изменить</button>
+                                    <button class="btn-delete" onclick="deleteClient('${client.id}')">Удалить</button>
                                 </div>
                             </div>
                         `;
@@ -976,4 +1048,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
