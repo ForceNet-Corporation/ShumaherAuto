@@ -8,7 +8,6 @@ body {
     background-image: url('../assets/background.jpg');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
     padding: 20px 40px;
     font-family: 'Inter', Arial, sans-serif;
     min-height: 100vh;
