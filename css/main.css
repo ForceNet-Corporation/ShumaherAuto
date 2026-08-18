@@ -251,7 +251,7 @@ body {
    ============================================================ */
 .admin-header {
     background: rgba(0, 0, 0, 0.8);
-    border: 2px solid rgba(255, 255, 255, 0.04);
+    border: 2px solid #b22222;
     border-radius: 20px;
     padding: 18px 28px;
     margin-bottom: 20px;
@@ -351,9 +351,9 @@ body {
 
 .btn-add {
     background: transparent;
-    border: 2px solid #b8860b;
+    border: 2px solid #b22222;
     border-radius: 10px;
-    color: #b8860b;
+    color: #ffffff;
     padding: 8px 22px;
     font-size: 14px;
     font-weight: 600;
