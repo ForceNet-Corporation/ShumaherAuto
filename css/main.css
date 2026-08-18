@@ -75,9 +75,9 @@ body {
 
 .reg {
     background-color: transparent;
-    border: 2px solid #b8860b;
+    border: 2px solid rgba(255, 255, 255, 0.12);
     border-radius: 25px;
-    color: #b8860b;
+    color: #ffffff;
     width: 200px;
     padding: 10px 20px;
     font-size: 20px;
@@ -299,7 +299,7 @@ body {
 
 .stat-card {
     background: rgba(0, 0, 0, 0.7);
-    border: 2px solid rgba(255, 255, 255, 0.04);
+    border: 2px solid #b22222;
     border-radius: 16px;
     padding: 18px 20px;
     text-align: center;
@@ -309,7 +309,7 @@ body {
 .stat-number {
     font-size: 32px;
     font-weight: 800;
-    color: #b8860b;
+    color: #b22222;
 }
 
 .stat-label {
