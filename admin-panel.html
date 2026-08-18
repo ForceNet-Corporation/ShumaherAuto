@@ -13,732 +13,144 @@
     <link rel="shortcut icon" href="assets/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
     <link rel="manifest" href="assets/site.webmanifest" />
-    
-    <style>
-        /* ============================================================
-           БАЗОВЫЕ СТИЛИ
-           ============================================================ */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            padding: 10px !important;
-            background: #000000;
-            font-family: 'Inter', Arial, sans-serif;
-            min-height: 100vh;
-        }
-        
-        /* ============================================================
-           ШАПКА
-           ============================================================ */
-        .admin-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-        }
-        
-        .admin-header .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .header-logo {
-            height: 55px;
-            width: 55px;
-            object-fit: contain;
-            border-radius: 0;
-            background: transparent;
-            padding: 0;
-        }
-        
-        .admin-header .brand {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        
-        .admin-header .brand .red {
-            color: #ff1a1a;
-        }
-        
-        .admin-header .brand .white {
-            color: #ffffff;
-        }
-        
-        .admin-header .header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .admin-email {
-            color: rgba(255,255,255,0.3);
-            font-size: 11px;
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .logout-btn {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 8px;
-            color: #ff1a1a;
-            padding: 6px 14px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        
-        .logout-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* ============================================================
-           СТАТИСТИКА
-           ============================================================ */
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        
-        .stat-card {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 28px;
-            font-weight: 800;
-            color: #ff1a1a;
-        }
-        
-        .stat-label {
-            color: rgba(255,255,255,0.4);
-            font-size: 11px;
-            margin-top: 2px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        /* ============================================================
-           ПАНЕЛЬ
-           ============================================================ */
-        .admin-panel {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 16px;
-            padding: 16px;
-            position: relative;
-        }
-        
-        /* Градиент сверху */
-        .admin-panel::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            height: 4px;
-            background: linear-gradient(90deg, #ff1a1a, #ffffff, #ff1a1a);
-            border-radius: 16px 16px 0 0;
-            z-index: 1;
-        }
-        
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .panel-header h2 {
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .panel-header h2 .count {
-            color: rgba(255,255,255,0.25);
-            font-weight: 400;
-            font-size: 13px;
-        }
-        
-        .btn-add {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 10px;
-            color: #ff1a1a;
-            padding: 8px 18px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        
-        .btn-add:active {
-            transform: scale(0.95);
-        }
-        
-        /* ============================================================
-           КАРТОЧКИ КЛИЕНТОВ
-           ============================================================ */
-        .clients-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .client-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.2s;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .client-card:active {
-            transform: scale(0.98);
-            background: rgba(255,255,255,0.06);
-        }
-        
-        .client-card .client-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-            flex: 1;
-        }
-        
-        .client-card .client-name {
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .client-card .client-details {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .client-card .client-details span {
-            color: rgba(255,255,255,0.3);
-            font-size: 12px;
-        }
-        
-        .client-card .client-details .tag {
-            font-family: monospace;
-            font-size: 10px;
-            color: rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-        
-        .client-card .client-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        
-        .btn-edit {
-            background: #000000;
-            border: 2px solid #00cc44;
-            border-radius: 8px;
-            color: #00cc44;
-            padding: 6px 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            line-height: 1;
-            min-width: 70px;
-            text-align: center;
-        }
-        
-        .btn-edit:active {
-            transform: scale(0.9);
-        }
-        
-        .btn-delete {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 8px;
-            color: #ff1a1a;
-            padding: 6px 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            line-height: 1;
-            min-width: 70px;
-            text-align: center;
-        }
-        
-        .btn-delete:active {
-            transform: scale(0.9);
-        }
-        
-        .empty {
-            color: rgba(255,255,255,0.15);
-            text-align: center;
-            padding: 30px 0;
-            font-size: 14px;
-        }
-        
-        /* ============================================================
-           МОДАЛЬНЫЕ ОКНА
-           ============================================================ */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(4px);
-            z-index: 999;
-            justify-content: center;
-            align-items: flex-end;
-            padding: 20px;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal {
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 20px 20px 0 0;
-            padding: 24px 20px 30px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            position: relative;
-        }
-        
-        @keyframes slideUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        /* Градиент сверху для модалок */
-        .modal::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            height: 4px;
-            background: linear-gradient(90deg, #ff1a1a, #ffffff, #ff1a1a);
-            border-radius: 20px 20px 0 0;
-            z-index: 1;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.3);
-            font-size: 26px;
-            cursor: pointer;
-            padding: 4px;
-            z-index: 2;
-        }
-        
-        .modal-close:active {
-            transform: scale(0.9);
-        }
-        
-        .modal h2 {
-            color: white;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            padding-right: 30px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal .modal-sub {
-            color: rgba(255,255,255,0.3);
-            font-size: 13px;
-            margin-bottom: 18px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal label {
-            display: block;
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            margin-top: 10px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal input {
-            width: 100%;
-            padding: 12px 14px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-            transition: 0.2s;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal input:focus {
-            border-color: #ff1a1a;
-            background: rgba(255,255,255,0.08);
-        }
-        
-        .modal input::placeholder {
-            color: rgba(255,255,255,0.15);
-        }
-        
-        .modal .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: #000000;
-            border: 2px solid #ff1a1a;
-            border-radius: 12px;
-            color: #ff1a1a;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 16px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal .btn-login:active {
-            transform: scale(0.97);
-        }
-        
-        .modal .btn-login.secondary {
-            border-color: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.4);
-            margin-top: 8px;
-        }
-        
-        .modal .btn-login.secondary:active {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .modal .error-msg {
-            color: #ff1a1a;
-            font-size: 13px;
-            margin-top: 12px;
-            display: none;
-            padding: 10px 14px;
-            background: rgba(255,26,26,0.08);
-            border: 1px solid rgba(255,26,26,0.15);
-            border-radius: 8px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .modal .error-msg.show {
-            display: block;
-        }
-        
-        /* ============================================================
-           ТАБЫ В РЕДАКТИРОВАНИИ
-           ============================================================ */
-        .edit-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .edit-tabs button {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            background: #000000;
-            color: rgba(255,255,255,0.3);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .edit-tabs button.active {
-            border-color: #ff1a1a;
-            color: #ff1a1a;
-        }
-        
-        .edit-tabs button:active {
-            transform: scale(0.95);
-        }
-        
-        /* ============================================================
-           АДАПТИВ
-           ============================================================ */
-        @media (max-width: 400px) {
-            .admin-header .brand {
-                font-size: 18px;
-            }
-            .header-logo {
-                height: 45px;
-                width: 45px;
-            }
-            .admin-email {
-                font-size: 10px;
-                max-width: 80px;
-            }
-            .stat-number {
-                font-size: 22px;
-            }
-            .client-card {
-                padding: 12px;
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .client-card .client-actions {
-                justify-content: flex-end;
-                margin-top: 6px;
-            }
-            .btn-edit, .btn-delete {
-                min-width: 60px;
-                font-size: 12px;
-                padding: 5px 10px;
-            }
-            .modal {
-                padding: 20px 16px 24px;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .stats {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .modal-overlay {
-                align-items: center;
-            }
-            .modal {
-                border-radius: 20px;
-                max-height: 85vh;
-            }
-        }
-    </style>
 </head>
 <body>
-    
-    <!-- ===== ШАПКА ===== -->
     <div class="admin-header">
         <div class="header-left">
             <img src="assets/shum-logo.png" alt="logo" class="header-logo">
-            <span class="brand">
-                <span class="red">Shumaher</span><span class="white">Auto</span>
+            <span style="font-size:22px; font-weight:800; letter-spacing:-0.5px;">
+                <span style="color:#b22222;">Shumaher</span><span style="color:#ffffff;">Auto</span>
             </span>
         </div>
-        <div class="header-right">
+        <div>
             <span class="admin-email" id="adminEmailDisplay">admin</span>
             <button class="logout-btn" onclick="logoutAdmin()">Выйти</button>
         </div>
     </div>
 
-    <!-- ===== СТАТИСТИКА ===== -->
-    <div class="stats">
-        <div class="stat-card">
-            <div class="stat-number" id="totalClients">0</div>
-            <div class="stat-label">Клиентов</div>
+    <div class="admin-container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalClients">0</div>
+                <div class="stat-label">Клиентов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalCars">0</div>
+                <div class="stat-label">Авто</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number" id="totalCars">0</div>
-            <div class="stat-label">Авто</div>
+
+        <div class="admin-panel">
+            <div class="panel-header">
+                <h2>Клиенты <span class="count" id="clientsCount"></span></h2>
+                <button class="btn-add" onclick="openStep1()">+ Добавить</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Метка</th>
+                            <th>Владелец</th>
+                            <th>Автомобиль</th>
+                            <th>Гос. номер</th>
+                            <th style="text-align:center;">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <tr><td colspan="5" class="empty">Загрузка...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- ===== СПИСОК КЛИЕНТОВ ===== -->
-    <div class="admin-panel">
-        <div class="panel-header">
-            <h2>Клиенты <span class="count" id="clientsCount"></span></h2>
-            <button class="btn-add" onclick="openStep1()">+ Добавить</button>
-        </div>
-        <div class="clients-list" id="clientsList">
-            <div class="empty">Загрузка...</div>
-        </div>
-    </div>
-
-    <!-- ===== МОДАЛКА ШАГ 1 (МАСЛО) ===== -->
+    <!-- МОДАЛКА ШАГ 1 (МАСЛО) -->
     <div class="modal-overlay" id="step1Modal">
         <div class="modal">
             <button class="modal-close" onclick="closeStep1()">×</button>
             <h2>🛢️ Данные о масле</h2>
             <p class="modal-sub">Шаг 1 из 2</p>
-            
             <label>Дата замены масла</label>
             <input type="text" id="oilChangeDate" placeholder="15.08.2026">
-            
             <label>Пробег при замене (км)</label>
             <input type="text" id="oilMileage" placeholder="15000">
-            
             <label>Дата следующей замены</label>
             <input type="text" id="nextOilDate" placeholder="15.11.2026">
-            
             <label>Пробег следующей замены (км)</label>
             <input type="text" id="nextOilMileage" placeholder="20000">
-            
             <label>Марка масла</label>
             <input type="text" id="oilBrand" placeholder="Castrol Magnatec 5W-30">
-            
             <button class="btn-login" onclick="openStep2()">Далее ➜</button>
             <div class="error-msg" id="step1Error">Ошибка</div>
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА ШАГ 2 (ОСНОВНЫЕ) ===== -->
+    <!-- МОДАЛКА ШАГ 2 (ОСНОВНЫЕ) -->
     <div class="modal-overlay" id="step2Modal">
         <div class="modal">
             <button class="modal-close" onclick="closeStep2()">×</button>
             <h2>🚗 Основные данные</h2>
             <p class="modal-sub">Шаг 2 из 2</p>
-            
             <label>UID метки</label>
             <input type="text" id="inputTagId" placeholder="ivan">
-            
             <label>Владелец (ФИО)</label>
             <input type="text" id="inputName" placeholder="Иван Петров">
-            
             <label>Автомобиль</label>
             <input type="text" id="inputCar" placeholder="Toyota">
-            
             <label>Модель</label>
             <input type="text" id="inputModel" placeholder="Camry">
-            
             <label>Гос. номер</label>
             <input type="text" id="inputGosNum" placeholder="A123BC">
-            
             <label>VIN номер</label>
             <input type="text" id="inputVin" placeholder="JTDBE32KX60012345">
-            
             <label>Телефон</label>
             <input type="text" id="inputPhone" placeholder="+7 999 123-45-67">
-            
             <label>Пробег (км)</label>
             <input type="text" id="inputMileage" placeholder="15000">
-            
             <button class="btn-login" onclick="addClient()">Сохранить</button>
             <button class="btn-login secondary" onclick="goBackStep1()">← Назад</button>
             <div class="error-msg" id="step2Error">Ошибка</div>
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ===== -->
+    <!-- МОДАЛКА РЕДАКТИРОВАНИЯ -->
     <div class="modal-overlay" id="editModal">
         <div class="modal">
             <button class="modal-close" onclick="closeEditModal()">×</button>
             <h2>✏️ Редактировать</h2>
             <p class="modal-sub" id="editClientName">Клиент</p>
-            
             <div class="edit-tabs">
                 <button class="active" onclick="switchEditTab('oil')">Масло</button>
                 <button onclick="switchEditTab('main')">Основное</button>
             </div>
-            
             <div id="editOilData">
                 <label>Дата замены масла</label>
                 <input type="text" id="editOilChangeDate" placeholder="15.08.2026">
-                
                 <label>Пробег при замене (км)</label>
                 <input type="text" id="editOilMileage" placeholder="15000">
-                
                 <label>Дата следующей замены</label>
                 <input type="text" id="editNextOilDate" placeholder="15.11.2026">
-                
                 <label>Пробег следующей замены (км)</label>
                 <input type="text" id="editNextOilMileage" placeholder="20000">
-                
                 <label>Марка масла</label>
                 <input type="text" id="editOilBrand" placeholder="Castrol Magnatec 5W-30">
             </div>
-            
             <div id="editMainData" style="display:none;">
                 <label>Владелец (ФИО)</label>
                 <input type="text" id="editName" placeholder="Иван Петров">
-                
                 <label>Автомобиль</label>
                 <input type="text" id="editCar" placeholder="Toyota">
-                
                 <label>Модель</label>
                 <input type="text" id="editModel" placeholder="Camry">
-                
                 <label>Гос. номер</label>
                 <input type="text" id="editGosNum" placeholder="A123BC">
-                
                 <label>VIN номер</label>
                 <input type="text" id="editVin" placeholder="JTDBE32KX60012345">
-                
                 <label>Телефон</label>
                 <input type="text" id="editPhone" placeholder="+7 999 123-45-67">
-                
                 <label>Пробег (км)</label>
                 <input type="text" id="editMileage" placeholder="15000">
             </div>
-            
             <button class="btn-login" onclick="saveEdit()">💾 Сохранить</button>
             <div class="error-msg" id="editError">Ошибка</div>
         </div>
@@ -758,9 +170,6 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // ============================================================
-        // 🔐 АДМИНЫ
-        // ============================================================
         const ADMIN_EMAILS = ['az99arseniy@gmail.com', 'alekdavidov@gmail.com'];
 
         auth.onAuthStateChanged((user) => {
@@ -782,12 +191,9 @@
             });
         }
 
-        // ============================================================
-        // 📋 ЗАГРУЗКА КЛИЕНТОВ (КАРТОЧКИ)
-        // ============================================================
         function loadClients() {
-            const container = document.getElementById('clientsList');
-            container.innerHTML = '<div class="empty">Загрузка...</div>';
+            const tbody = document.getElementById('clientsTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">Загрузка...</td></tr>';
 
             db.collection('clients').orderBy('name').get()
                 .then((snapshot) => {
@@ -801,40 +207,34 @@
                     document.getElementById('clientsCount').textContent = `(${clients.length})`;
 
                     if (clients.length === 0) {
-                        container.innerHTML = '<div class="empty">Нет клиентов</div>';
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty">Нет клиентов</td></tr>';
                         return;
                     }
 
                     let html = '';
                     clients.forEach((client) => {
                         html += `
-                            <div class="client-card">
-                                <div class="client-info">
-                                    <div class="client-name">${client.name || 'Без имени'}</div>
-                                    <div class="client-details">
-                                        <span>${client.car || '—'} ${client.model || ''}</span>
-                                        <span class="tag">${client.id}</span>
-                                        <span>${client['gos-num'] || '—'}</span>
-                                    </div>
-                                </div>
-                                <div class="client-actions">
+                            <tr>
+                                <td><span class="tag-id">${client.id}</span></td>
+                                <td>${client.name || '—'}</td>
+                                <td>${client.car || '—'}</td>
+                                <td>${client['gos-num'] || '—'}</td>
+                                <td style="text-align:center; white-space:nowrap;">
                                     <button class="btn-edit" onclick="openEdit('${client.id}')">Изменить</button>
                                     <button class="btn-delete" onclick="deleteClient('${client.id}')">Удалить</button>
-                                </div>
-                            </div>
+                                </td>
+                            </tr>
                         `;
                     });
-                    container.innerHTML = html;
+                    tbody.innerHTML = html;
                 })
                 .catch((error) => {
                     console.error('Ошибка загрузки:', error);
-                    container.innerHTML = '<div class="empty">Ошибка загрузки</div>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty">Ошибка загрузки</td></tr>';
                 });
         }
 
-        // ============================================================
-        // 🛢️ ДОБАВЛЕНИЕ
-        // ============================================================
+        // ДОБАВЛЕНИЕ
         let tempOilData = {};
 
         function openStep1() {
@@ -914,9 +314,7 @@
                 });
         }
 
-        // ============================================================
-        // 🗑️ УДАЛЕНИЕ
-        // ============================================================
+        // УДАЛЕНИЕ
         function deleteClient(clientId) {
             if (!confirm('Удалить клиента?')) return;
             db.collection('clients').doc(clientId).delete()
@@ -926,9 +324,7 @@
                 });
         }
 
-        // ============================================================
-        // ✏️ РЕДАКТИРОВАНИЕ (с загрузкой данных)
-        // ============================================================
+        // РЕДАКТИРОВАНИЕ
         let editClientId = null;
         let editTab = 'oil';
 
@@ -942,13 +338,11 @@
                 .then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        // Масло
                         document.getElementById('editOilChangeDate').value = data.oilChangeDate || '';
                         document.getElementById('editOilMileage').value = data.oilMileage || '';
                         document.getElementById('editNextOilDate').value = data.nextOilDate || '';
                         document.getElementById('editNextOilMileage').value = data.nextOilMileage || '';
                         document.getElementById('editOilBrand').value = data.oilBrand || '';
-                        // Основное
                         document.getElementById('editName').value = data.name || '';
                         document.getElementById('editCar').value = data.car || '';
                         document.getElementById('editModel').value = data.model || '';
@@ -956,7 +350,6 @@
                         document.getElementById('editVin').value = data['vin-num'] || '';
                         document.getElementById('editPhone').value = data.phone || '';
                         document.getElementById('editMileage').value = data.mileage || '';
-                        
                         document.getElementById('editClientName').textContent = data.name || 'Клиент';
                     }
                 })
@@ -1011,7 +404,6 @@
                 mileage: document.getElementById('editMileage').value.trim()
             };
 
-            // Проверка только активной вкладки
             if (editTab === 'oil') {
                 if (!oilData.oilChangeDate || !oilData.oilMileage || !oilData.nextOilDate || !oilData.nextOilMileage || !oilData.oilBrand) {
                     errorEl.textContent = 'Заполните все поля масла!';
@@ -1038,7 +430,6 @@
                 });
         }
 
-        // Закрытие модалок по клику вне
         document.querySelectorAll('.modal-overlay').forEach(el => {
             el.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -1048,4 +439,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
