@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ShumaherAuto - Информация</title>
     <link rel="stylesheet" href="css/main.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+    </script>
     <link rel="icon" type="image/png" href="assets/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="shortcut icon" href="assets/favicon.ico" />
@@ -68,6 +71,10 @@
             text-align: left;
             max-width: 400px;
             margin: 0 auto;
+            /* Добавляем отступы по краям, как во втором слайде */
+            padding: 0 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .slide-content .row {
             display: flex;
@@ -76,12 +83,15 @@
             border-bottom: 1px solid red;
         }
         .slide-content .row .label {
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-weight: 300;
             padding-right: 10px;
+            /* Добавляем отступ после label */
+            margin-right: 10px;
         }
         .slide-content .row .value {
             font-weight: 500;
+            text-align: right;
         }
         .slide-dots {
             display: flex;
@@ -93,7 +103,7 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             transition: 0.3s;
             cursor: pointer;
         }
@@ -102,12 +112,15 @@
             width: 30px;
             border-radius: 10px;
         }
-        .loading, .not-found {
+        .loading,
+        .not-found {
             text-align: center;
             padding: 40px 0;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
         }
-        .not-found { font-size: 18px; }
+        .not-found {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -222,23 +235,23 @@
 
                         // Масло
                         oilContent.innerHTML = `
-                            <div class="row"><span class="label">Дата замены</span><span class="value">${data.oilChangeDate || '—'}</span></div>
-                            <div class="row"><span class="label">Пробег при замене</span><span class="value">${data.oilMileage || '—'} км</span></div>
-                            <div class="row"><span class="label">Следующая замена</span><span class="value">${data.nextOilDate || '—'}</span></div>
-                            <div class="row"><span class="label">Пробег следующей замены</span><span class="value">${data.nextOilMileage || '—'} км</span></div>
-                            <div class="row"><span class="label">Марка масла</span><span class="value">${data.oilBrand || '—'}</span></div>
-                        `;
+                                <div class="row"><span class="label">Дата замены</span><span class="value">${data.oilChangeDate || '—'}</span></div>
+                                <div class="row"><span class="label">Пробег при замене</span><span class="value">${data.oilMileage || '—'} км</span></div>
+                                <div class="row"><span class="label">Следующая замена</span><span class="value">${data.nextOilDate || '—'}</span></div>
+                                <div class="row"><span class="label">Пробег следующей замены</span><span class="value">${data.nextOilMileage || '—'} км</span></div>
+                                <div class="row"><span class="label">Марка масла</span><span class="value">${data.oilBrand || '—'}</span></div>
+                            `;
 
                         // Авто
                         carContent.innerHTML = `
-                            <div class="row"><span class="label">Владелец</span><span class="value">${data.name || '—'}</span></div>
-                            <div class="row"><span class="label">Автомобиль</span><span class="value">${data.car || '—'}</span></div>
-                            <div class="row"><span class="label">Модель</span><span class="value">${data.model || '—'}</span></div>
-                            <div class="row"><span class="label">Гос. номер</span><span class="value">${data['gos-num'] || '—'}</span></div>
-                            <div class="row"><span class="label">VIN</span><span class="value">${data['vin-num'] || '—'}</span></div>
-                            <div class="row"><span class="label">Телефон</span><span class="value">${data.phone || '—'}</span></div>
-                            <div class="row"><span class="label">Пробег</span><span class="value">${data.mileage || '—'} км</span></div>
-                        `;
+                                <div class="row"><span class="label">Владелец</span><span class="value">${data.name || '—'}</span></div>
+                                <div class="row"><span class="label">Автомобиль</span><span class="value">${data.car || '—'}</span></div>
+                                <div class="row"><span class="label">Модель</span><span class="value">${data.model || '—'}</span></div>
+                                <div class="row"><span class="label">Гос. номер</span><span class="value">${data['gos-num'] || '—'}</span></div>
+                                <div class="row"><span class="label">VIN</span><span class="value">${data['vin-num'] || '—'}</span></div>
+                                <div class="row"><span class="label">Телефон</span><span class="value">${data.phone || '—'}</span></div>
+                                <div class="row"><span class="label">Пробег</span><span class="value">${data.mileage || '—'} км</span></div>
+                            `;
                     } else {
                         oilContent.innerHTML = '<div class="not-found">Клиент не найден</div>';
                         carContent.innerHTML = '<div class="not-found">Клиент не найден</div>';
