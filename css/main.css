@@ -6,13 +6,19 @@
 
 body {
     background-image: url('../assets/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     padding: 20px 40px;
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', Arial, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
+/* ============================================================
+   ШАПКА (общая)
+   ============================================================ */
 .header-left {
     display: flex;
     align-items: center;
@@ -21,18 +27,21 @@ body {
 
 .header-logo {
     height: 50px;
-    object-fit: cover;
+    width: 50px;
+    object-fit: contain;
 }
 
+/* ============================================================
+   ГЛАВНАЯ СТРАНИЦА (index)
+   ============================================================ */
 .container {
-    background-color: black;
-    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     padding: 30px;
     margin-bottom: 20px;
     text-align: center;
-    opacity: 0.7;
-
+    backdrop-filter: blur(4px);
 }
 
 .container ul {
@@ -44,7 +53,7 @@ body {
 
 .container ul li {
     padding: 8px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .container ul li:last-child {
@@ -52,37 +61,40 @@ body {
 }
 
 .container ul li strong {
-    color: #667eea;
+    color: #b8860b;
 }
 
 .down {
-    background-color: black;
-    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
     text-align: center;
     padding: 20px 0;
-    opacity: 0.7;
+    backdrop-filter: blur(4px);
 }
 
 .reg {
-    background-color: black;
-    border: 2px solid white;
+    background-color: transparent;
+    border: 2px solid #b8860b;
     border-radius: 25px;
-    color: white;
+    color: #b8860b;
     width: 200px;
     padding: 10px 20px;
-    font-size: 24px;
+    font-size: 20px;
+    font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
     margin: 8px;
 }
 
 .reg:hover {
-    padding: 13px 23px;
-    font-size: 28px;
-    margin: 0px;
+    background: rgba(184, 134, 11, 0.1);
+    transform: scale(1.03);
 }
 
+/* ============================================================
+   МОДАЛЬНЫЕ ОКНА (общие)
+   ============================================================ */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -90,10 +102,12 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
     z-index: 1000;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
 
 .modal-overlay.active {
@@ -101,77 +115,130 @@ body {
 }
 
 .modal {
-    background: black;
-    border: 2px solid white;
+    background: #0d0d0d;
+    border: 2px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 40px;
-    max-width: 400px;
-    width: 90%;
+    max-width: 460px;
+    width: 100%;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFade 0.25s ease;
+}
+
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .modal-close {
     position: absolute;
-    top: 10px;
+    top: 14px;
     right: 20px;
     background: none;
     border: none;
-    color: white;
+    color: rgba(255, 255, 255, 0.25);
     font-size: 28px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #b8860b;
 }
 
 .modal h2 {
     color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    padding-right: 30px;
+}
+
+.modal .modal-sub {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
     margin-bottom: 20px;
-    text-align: center;
 }
 
 .modal label {
     display: block;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
-    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    margin-top: 12px;
 }
 
 .modal input {
     width: 100%;
     padding: 12px 16px;
-    margin-bottom: 16px;
-    background: black;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(255, 255, 255, 0.06);
     border-radius: 10px;
     color: white;
     font-size: 15px;
     outline: none;
+    transition: 0.25s;
 }
 
 .modal input:focus {
-    border-color: #667eea;
+    border-color: #b8860b;
+    background: rgba(255, 255, 255, 0.06);
 }
 
+.modal input::placeholder {
+    color: rgba(255, 255, 255, 0.12);
+}
+
+/* ============================================================
+   КНОПКИ (общие)
+   ============================================================ */
 .btn-login {
     width: 100%;
     padding: 14px;
-    background: black;
-    border: 2px solid white;
-    border-radius: 10px;
-    color: white;
+    background: transparent;
+    border: 2px solid #b8860b;
+    border-radius: 12px;
+    color: #b8860b;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.25s;
+    margin-top: 16px;
 }
 
 .btn-login:hover {
-    padding: 16px;
-    font-size: 18px;
+    background: rgba(184, 134, 11, 0.08);
+    transform: scale(1.01);
+}
+
+.btn-login.secondary {
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 8px;
+}
+
+.btn-login.secondary:hover {
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .error-msg {
-    color: #ff6b6b;
+    color: #b22222;
     font-size: 14px;
     margin-top: 12px;
     display: none;
+    padding: 10px 14px;
+    background: rgba(178, 34, 34, 0.06);
+    border: 1px solid rgba(178, 34, 34, 0.12);
+    border-radius: 8px;
     text-align: center;
 }
 
@@ -179,45 +246,44 @@ body {
     display: block;
 }
 
+/* ============================================================
+   АДМИН-ПАНЕЛЬ
+   ============================================================ */
 .admin-header {
-    background-color: black;
-    border: 2px solid white;
+    background: rgba(0, 0, 0, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.06);
     border-radius: 20px;
-    padding: 20px 30px;
+    padding: 18px 28px;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-}
-
-.admin-header h1 {
-    font-size: 24px;
-}
-
-.admin-header div {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    backdrop-filter: blur(6px);
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .admin-header .admin-email {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 14px;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 13px;
 }
 
 .logout-btn {
-    background: black;
-    border: 2px solid #ff0000;
+    background: transparent;
+    border: 2px solid #8b1a1a;
     border-radius: 10px;
-    color: #ff0000;
-    padding: 8px 62px;
+    color: #b22222;
+    padding: 6px 24px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.25s;
 }
 
 .logout-btn:hover {
-    padding: 2px;
+    background: rgba(178, 34, 34, 0.06);
+    transform: scale(1.02);
 }
 
 .admin-container {
@@ -226,66 +292,101 @@ body {
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
     margin-bottom: 20px;
 }
 
 .stat-card {
-    background-color: black;
-    border: 2px solid white;
-    border-radius: 20px;
-    padding: 20px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 2px solid rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+    padding: 18px 20px;
     text-align: center;
+    backdrop-filter: blur(4px);
 }
 
 .stat-number {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 800;
-    color: #667eea;
+    color: #b8860b;
 }
 
 .stat-label {
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 14px;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 13px;
     margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .admin-panel {
-    background-color: black;
-    border: 2px solid white;
+    background: rgba(0, 0, 0, 0.65);
+    border: 2px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
-    padding: 25px 30px;
+    padding: 22px 26px;
+    backdrop-filter: blur(4px);
+    position: relative;
+}
+
+.admin-panel::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    height: 4px;
+    background: linear-gradient(90deg, #b8860b, #ffffff33, #b8860b);
+    border-radius: 20px 20px 0 0;
 }
 
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+    z-index: 2;
 }
 
 .panel-header h2 {
     color: white;
     font-size: 18px;
+    font-weight: 600;
+}
+
+.panel-header h2 .count {
+    color: rgba(255, 255, 255, 0.15);
+    font-weight: 400;
+    font-size: 14px;
 }
 
 .btn-add {
-    background: black;
-    border: 2px solid #667eea;
+    background: transparent;
+    border: 2px solid #b8860b;
     border-radius: 10px;
-    color: white;
-    padding: 8px 24px;
+    color: #b8860b;
+    padding: 8px 22px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.25s;
 }
 
 .btn-add:hover {
-    background: rgb(50, 50, 80);
+    background: rgba(184, 134, 11, 0.06);
+    transform: scale(1.02);
 }
 
+/* ============================================================
+   ТАБЛИЦА / КАРТОЧКИ КЛИЕНТОВ
+   ============================================================ */
 .table-wrapper {
     overflow-x: auto;
+    position: relative;
+    z-index: 2;
 }
 
 table {
@@ -294,75 +395,150 @@ table {
 }
 
 table th {
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 12px;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 11px;
     text-transform: uppercase;
-    padding: 12px;
+    letter-spacing: 0.8px;
+    padding: 12px 10px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 table td {
-    color: white;
-    padding: 14px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     font-size: 14px;
 }
 
 table tr:hover td {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .tag-id {
     font-family: monospace;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.3);
-    background: black;
+    color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
     padding: 4px 10px;
     border-radius: 6px;
 }
 
-.btn-delete {
-    background: rgba(255, 107, 107, 0.12);
-    border: 1px solid rgba(255, 107, 107, 0.2);
-    border-radius: 6px;
-    color: #ff6b6b;
-    padding: 4px 14px;
+/* ============================================================
+   КНОПКИ В ТАБЛИЦЕ
+   ============================================================ */
+.btn-edit {
+    background: rgba(0, 180, 60, 0.06);
+    border: 2px solid #008b3a;
+    border-radius: 8px;
+    color: #00b84a;
+    padding: 4px 16px;
     cursor: pointer;
-    font-size: 12px;
-    transition: 0.3s;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.25s;
+    margin-right: 6px;
+    min-width: 72px;
 }
 
-.btn-edit {
-    background: rgba(0, 255, 34, 0.233);
-    border: 1px solid rgb(0, 255, 55);
-    border-radius: 6px;
-    color: #6bff72;
-    padding: 4px 14px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: 0.3s;
-    margin-bottom: 6px;
-    margin-right: 6px;
+.btn-edit:hover {
+    background: rgba(0, 180, 60, 0.1);
+    transform: scale(1.02);
 }
+
+.btn-delete {
+    background: rgba(178, 34, 34, 0.06);
+    border: 2px solid #8b1a1a;
+    border-radius: 8px;
+    color: #b22222;
+    padding: 4px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.25s;
+    min-width: 72px;
+}
+
 .btn-delete:hover {
-    background: rgba(255, 107, 107, 0.25);
+    background: rgba(178, 34, 34, 0.08);
+    transform: scale(1.02);
 }
 
 .empty {
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.08);
     text-align: center;
     padding: 40px 0;
+    font-size: 15px;
 }
 
+/* ============================================================
+   ТАБЫ В РЕДАКТИРОВАНИИ
+   ============================================================ */
+.edit-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.edit-tabs button {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.edit-tabs button.active {
+    border-color: #b8860b;
+    color: #b8860b;
+}
+
+.edit-tabs button:hover {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
 @media (max-width: 600px) {
+    body {
+        padding: 12px 16px;
+    }
     .admin-header {
         flex-direction: column;
-        gap: 10px;
         text-align: center;
+        padding: 14px 18px;
     }
     .admin-header div {
         flex-wrap: wrap;
         justify-content: center;
+    }
+    .admin-panel {
+        padding: 16px;
+    }
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .modal {
+        padding: 28px 18px 24px;
+    }
+    .btn-edit,
+    .btn-delete {
+        min-width: 60px;
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+    .container ul {
+        font-size: 22px;
+    }
+    .reg {
+        width: 160px;
+        font-size: 16px;
     }
 }
